@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillConnectIndia - Find Skilled Professionals Near You</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#0066cc',
+secondary: '#ff6b35'
+},
+borderRadius: {
+'none': '0px',
+'sm': '4px',
+DEFAULT: '8px',
+'md': '12px',
+'lg': '16px',
+'xl': '20px',
+'2xl': '24px',
+'3xl': '32px',
+'full': '9999px',
+'button': '8px'
+}
+}
+}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+.category-card:hover { transform: translateY(-5px); }
+.modal { display: none; }
+.modal.active { display: flex; }
+</style>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-sm fixed w-full z-50">
+<div class="max-w-7xl mx-auto px-4">
+<div class="flex justify-between h-16">
+<div class="flex items-center">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary">SkillConnect</a>
+</div>
+<div class="hidden md:flex items-center space-x-8">
+<a href="#" class="text-gray-700 hover:text-primary relative group" onclick="scrollToTop(event)">
+Home
+<span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+<span id="homeIndicator" class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transform scale-x-0 transition-transform origin-left"></span>
+</a>
+<script>
+function scrollToTop(e) {
+e.preventDefault();
+if(window.location.pathname === '/') {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
+} else {
+window.location.href = '/';
+}
+}
+function updateHomeIndicator() {
+const indicator = document.getElementById('homeIndicator');
+if(window.location.pathname === '/' && window.scrollY === 0) {
+indicator.style.transform = 'scaleX(1)';
+} else {
+indicator.style.transform = 'scaleX(0)';
+}
+}
+window.addEventListener('scroll', updateHomeIndicator);
+window.addEventListener('load', updateHomeIndicator);
+</script>
+<a href="#services" class="text-gray-700 hover:text-primary">Services</a>
+<a href="#about" class="text-gray-700 hover:text-primary">About</a>
+<a href="#contact" class="text-gray-700 hover:text-primary">Contact</a>
+<button onclick="openModal('loginModal')" class="px-4 py-2 text-primary border border-primary !rounded-button hover:bg-primary hover:text-white transition">Login</button>
+<button onclick="openModal('registerModal')" class="px-4 py-2 bg-primary text-white !rounded-button hover:bg-primary/90 transition">Register</button>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-16">
+<section class="relative h-[600px] bg-cover bg-center" style="background-image: url('https://public.readdy.ai/ai/img_res/2ed68116f21e01e653e4a38e6142f1bd.jpg')">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40"></div>
+<div class="relative max-w-7xl mx-auto px-4 h-full flex items-center">
+<div class="max-w-2xl text-white">
+<h1 class="text-5xl font-bold mb-6">Find Skilled Professionals Near You</h1>
+<p class="text-xl mb-8">Connect with verified professionals across India for all your service needs</p>
+<div class="bg-white p-4 rounded-lg shadow-lg">
+<div class="flex gap-4">
+<div class="flex-1">
+<div class="relative">
+<i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="text" placeholder="What service do you need?" class="w-full pl-10 pr-4 py-3 rounded border-none text-gray-800">
+</div>
+</div>
+<div class="flex-1">
+<div class="relative">
+<i class="ri-map-pin-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<div class="relative">
+<button id="cityButton" class="w-full pl-10 pr-4 py-3 rounded border-none text-gray-800 text-left bg-white flex items-center justify-between" onclick="toggleCityDropdown()">
+<span id="selectedCity">Select City</span>
+<i class="ri-arrow-down-s-line"></i>
+</button>
+<div id="cityDropdown" class="absolute left-0 right-0 top-full mt-1 bg-white rounded-lg shadow-lg opacity-0 invisible transform -translate-y-2 transition-all duration-200 z-10">
+<div class="p-2">
+<div class="relative">
+<i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="text" id="citySearch" class="w-full pl-10 pr-4 py-2 rounded border border-gray-200 text-sm" placeholder="Search cities..." oninput="filterCities()">
+</div>
+</div>
+<div class="max-h-64 overflow-y-auto">
+<div class="p-2 border-b">
+<div class="text-xs font-medium text-gray-500 mb-2">POPULAR CITIES</div>
+<div id="popularCities" class="space-y-1">
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="mumbai">Mumbai (2,456)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="delhi">Delhi (2,891)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="bangalore">Bangalore (2,234)</div>
+</div>
+</div>
+<div class="p-2">
+<div class="text-xs font-medium text-gray-500 mb-2">ALL CITIES</div>
+<div id="allCities" class="space-y-1">
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="hyderabad">Hyderabad (1,567)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="chennai">Chennai (1,432)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="kolkata">Kolkata (1,345)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="pune">Pune (987)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="ahmedabad">Ahmedabad (876)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="jaipur">Jaipur (765)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="lucknow">Lucknow (654)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="kanpur">Kanpur (543)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="nagpur">Nagpur (432)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="indore">Indore (321)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="thane">Thane (234)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="bhopal">Bhopal (210)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="patna">Patna (198)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="vadodara">Vadodara (187)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="ghaziabad">Ghaziabad (176)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="ludhiana">Ludhiana (165)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="agra">Agra (154)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="surat">Surat (143)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="varanasi">Varanasi (132)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="nashik">Nashik (121)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="meerut">Meerut (110)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="faridabad">Faridabad (98)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="rajkot">Rajkot (87)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="kalyan">Kalyan (76)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="amritsar">Amritsar (65)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="allahabad">Allahabad (54)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="howrah">Howrah (43)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="coimbatore">Coimbatore (32)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="jabalpur">Jabalpur (21)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="vijayawada">Vijayawada (19)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="jodhpur">Jodhpur (18)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="madurai">Madurai (17)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="raipur">Raipur (16)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="kota">Kota (15)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="guwahati">Guwahati (14)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="chandigarh">Chandigarh (13)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="solapur">Solapur (12)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="hubli">Hubli (11)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="dhanbad">Dhanbad (10)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="dehradun">Dehradun (9)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="bhilai">Bhilai (8)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="mysore">Mysore (7)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="gurgaon">Gurgaon (6)</div>
+<div class="city-option px-3 py-2 hover:bg-gray-100 rounded cursor-pointer" data-value="noida">Noida (5)</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+function toggleCityDropdown() {
+const dropdown = document.getElementById('cityDropdown');
+const isVisible = dropdown.classList.contains('opacity-100');
+if (isVisible) {
+dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+dropdown.classList.add('opacity-0', 'invisible', '-translate-y-2');
+} else {
+dropdown.classList.remove('opacity-0', 'invisible', '-translate-y-2');
+dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
+document.getElementById('citySearch').focus();
+}
+}
+function filterCities() {
+const searchText = document.getElementById('citySearch').value.toLowerCase();
+const allCityElements = document.querySelectorAll('.city-option');
+allCityElements.forEach(cityElement => {
+const cityName = cityElement.textContent.toLowerCase();
+if (cityName.includes(searchText)) {
+cityElement.style.display = 'block';
+} else {
+cityElement.style.display = 'none';
+}
+});
+}
+document.querySelectorAll('.city-option').forEach(option => {
+option.addEventListener('click', function() {
+const cityName = this.textContent.split(' (')[0];
+document.getElementById('selectedCity').textContent = cityName;
+toggleCityDropdown();
+});
+});
+document.addEventListener('click', function(e) {
+const dropdown = document.getElementById('cityDropdown');
+const button = document.getElementById('cityButton');
+if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+dropdown.classList.remove('opacity-100', 'visible', 'translate-y-0');
+dropdown.classList.add('opacity-0', 'invisible', '-translate-y-2');
+}
+});
+</script>
+<i class="ri-arrow-down-s-line absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+</div>
+<button onclick="handleSearch()" class="px-8 py-3 bg-primary text-white !rounded-button hover:bg-primary/90 transition whitespace-nowrap flex items-center">
+<span id="searchButtonText">Search</span>
+<div id="searchSpinner" class="hidden ml-2 w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+</button>
+<script>
+const mockProfessionals = [
+{
+id: 1,
+name: "Dr. Aditya Patel",
+profession: "Cardiologist",
+rating: 4.9,
+reviews: 328,
+experience: "15+ years",
+location: "Andheri West, Mumbai",
+availability: "Available Today",
+price: "₹1,000",
+languages: ["English", "Hindi", "Gujarati"],
+education: "MBBS, MD - Cardiology",
+image: "https://public.readdy.ai/ai/img_res/3932d7da1cab81718bb8acb166339e21.jpg"
+},
+{
+id: 2,
+name: "Priya Malhotra",
+profession: "Interior Designer",
+rating: 4.8,
+reviews: 256,
+experience: "8+ years",
+location: "Bandra, Mumbai",
+availability: "Next Day",
+price: "₹2,500",
+languages: ["English", "Hindi"],
+education: "B.Des Interior Design",
+image: "https://public.readdy.ai/ai/img_res/22d90da1a7b841dc47254222bdf67d00.jpg"
+},
+{
+id: 3,
+name: "Arjun Mehta",
+profession: "Software Engineer",
+rating: 4.7,
+reviews: 189,
+experience: "10+ years",
+location: "Powai, Mumbai",
+availability: "Available Today",
+price: "₹3,000",
+languages: ["English", "Hindi", "Marathi"],
+education: "B.Tech Computer Science",
+image: "https://public.readdy.ai/ai/img_res/be0895eb996f7bd8c490996fd27d1035.jpg"
+}
+];
+function handleSearch() {
+const service = document.querySelector('input[placeholder="What service do you need?"]').value;
+const city = document.getElementById('selectedCity').textContent;
+if (!service || city === 'Select City') {
+showNotification('Please select both service and city', 'error');
+return;
+}
+// Show loading state
+const searchButton = document.querySelector('button[onclick="handleSearch()"]');
+const searchButtonText = document.getElementById('searchButtonText');
+const searchSpinner = document.getElementById('searchSpinner');
+searchButtonText.textContent = 'Searching...';
+searchSpinner.classList.remove('hidden');
+searchButton.disabled = true;
+// Simulate API call
+setTimeout(() => {
+// Reset button state
+searchButtonText.textContent = 'Search';
+searchSpinner.classList.add('hidden');
+searchButton.disabled = false;
+// Create and show results modal
+const modal = document.createElement('div');
+modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+modal.innerHTML = `
+<div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="text-2xl font-semibold">Search Results</h3>
+<p class="text-gray-600 mt-1">Found ${mockProfessionals.length} professionals in ${city}</p>
+</div>
+<button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-500">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<div class="space-y-6">
+${mockProfessionals.map(pro => `
+<div class="border rounded-lg p-6 hover:shadow-lg transition">
+<div class="flex gap-6">
+<img src="${pro.image}" alt="${pro.name}" class="w-24 h-24 rounded-lg object-cover">
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-xl font-semibold">${pro.name}</h4>
+<p class="text-gray-600">${pro.profession}</p>
+<div class="flex items-center mt-2">
+<div class="flex items-center text-yellow-400">
+<i class="ri-star-fill mr-1"></i>
+<span class="font-medium">${pro.rating}</span>
+</div>
+<span class="mx-2 text-gray-300">•</span>
+<span class="text-gray-600">${pro.reviews} reviews</span>
+<span class="mx-2 text-gray-300">•</span>
+<span class="text-gray-600">${pro.experience}</span>
+</div>
+</div>
+<div class="text-right">
+<div class="text-lg font-semibold text-primary">${pro.price}</div>
+<div class="text-sm text-green-600 mt-1">${pro.availability}</div>
+</div>
+</div>
+<div class="mt-4 flex flex-wrap gap-2">
+<div class="px-3 py-1 bg-gray-100 rounded-full text-sm">
+<i class="ri-map-pin-line mr-1"></i>${pro.location}
+</div>
+<div class="px-3 py-1 bg-gray-100 rounded-full text-sm">
+<i class="ri-graduation-cap-line mr-1"></i>${pro.education}
+</div>
+<div class="px-3 py-1 bg-gray-100 rounded-full text-sm">
+<i class="ri-translate-2-line mr-1"></i>${pro.languages.join(", ")}
+</div>
+</div>
+<div class="mt-6 flex gap-4">
+<button onclick="handleBooking(${pro.id})" class="px-6 py-2 bg-primary text-white !rounded-button hover:bg-primary/90 transition flex items-center">
+<i class="ri-calendar-line mr-2"></i>Book Appointment
+</button>
+<button onclick="handleChat(${pro.id})" class="px-6 py-2 border border-primary text-primary !rounded-button hover:bg-primary/10 transition flex items-center">
+<i class="ri-message-3-line mr-2"></i>Chat
+</button>
+<button onclick="handleSaveProfile(${pro.id})" class="px-6 py-2 border border-gray-200 text-gray-700 !rounded-button hover:bg-gray-50 transition flex items-center">
+<i class="ri-bookmark-line mr-2"></i>Save
+</button>
+</div>
+</div>
+</div>
+</div>
+`).join('')}
+</div>
+</div>
+`;
+document.body.appendChild(modal);
+}, 1500);
+}
+function handleBooking(proId) {
+const pro = mockProfessionals.find(p => p.id === proId);
+showNotification(`Booking request sent to ${pro.name}!`);
+}
+function handleChat(proId) {
+const pro = mockProfessionals.find(p => p.id === proId);
+showNotification(`Chat initiated with ${pro.name}!`);
+}
+function handleSaveProfile(proId) {
+const pro = mockProfessionals.find(p => p.id === proId);
+showNotification(`${pro.name}'s profile saved to favorites!`);
+}
+</script>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="services" class="py-20 bg-white">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="text-3xl font-bold text-center mb-12">Popular Services</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+<a href="https://readdy.ai/home/41823fa2-c7ec-4106-b927-620ac47b7a0d/30971099-b158-4344-ba1e-b86cbe44f796" data-readdy="true" class="block">
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-stethoscope-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Doctors</h3>
+<p class="text-gray-600">Find qualified medical professionals</p>
+</div>
+</a>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-tools-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Engineers</h3>
+<p class="text-gray-600">Expert engineering solutions</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-hammer-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Carpenters</h3>
+<p class="text-gray-600">Professional woodworking services</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-paint-brush-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Painters</h3>
+<p class="text-gray-600">Quality painting services</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-home-heart-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Maids</h3>
+<p class="text-gray-600">Professional home cleaning services</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-book-open-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Teachers</h3>
+<p class="text-gray-600">Expert tutoring and education</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-building-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Builders</h3>
+<p class="text-gray-600">Professional construction services</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-scissors-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Aluminum Machinists</h3>
+<p class="text-gray-600">Expert aluminum fabrication</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-plug-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Electricians</h3>
+<p class="text-gray-600">Professional electrical services</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-drop-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Plumbers</h3>
+<p class="text-gray-600">Expert plumbing solutions</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-car-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Mechanics</h3>
+<p class="text-gray-600">Professional vehicle repairs</p>
+</div>
+<div class="category-card bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 cursor-pointer">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<i class="ri-scissors-2-line text-primary text-2xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-2">Beauticians</h3>
+<p class="text-gray-600">Professional beauty services</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-gray-50">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="text-3xl font-bold text-center mb-12">How It Works</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="text-center">
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="ri-search-line text-primary text-3xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-4">Search</h3>
+<p class="text-gray-600">Find the right professional for your needs</p>
+</div>
+<div class="text-center">
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="ri-calendar-check-line text-primary text-3xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-4">Book</h3>
+<p class="text-gray-600">Schedule a service at your convenience</p>
+</div>
+<div class="text-center">
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+<i class="ri-star-line text-primary text-3xl"></i>
+</div>
+<h3 class="text-xl font-semibold mb-4">Review</h3>
+<p class="text-gray-600">Share your experience with others</p>
+</div>
+</div>
+</div>
+</section>
+<section id="about" class="py-20 bg-white">
+<div class="max-w-7xl mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+<div>
+<h2 class="text-3xl font-bold mb-6">About SkillConnect India</h2>
+<p class="text-gray-600 mb-6">We are India's leading platform connecting skilled professionals with customers who need their services. Our mission is to make it easy for people to find reliable, verified professionals for all their service needs.</p>
+<ul class="space-y-4">
+<li class="flex items-center">
+<i class="ri-check-line text-primary mr-3"></i>
+<span>Verified Professionals</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-primary mr-3"></i>
+<span>Secure Payments</span>
+</li>
+<li class="flex items-center">
+<i class="ri-check-line text-primary mr-3"></i>
+<span>24/7 Support</span>
+</li>
+</ul>
+</div>
+<div>
+<img src="https://public.readdy.ai/ai/img_res/72552b6d2f02160b307ad23d057a4c3d.jpg" alt="About Us" class="rounded-lg shadow-lg">
+</div>
+</div>
+</div>
+</section>
+<section id="contact" class="py-20 bg-gray-50">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="text-3xl font-bold text-center mb-12">Contact Us</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div>
+<div class="bg-white rounded-lg shadow-sm p-8">
+<h3 class="text-xl font-semibold mb-6">Get in Touch</h3>
+<form id="contactForm" class="space-y-6" onsubmit="handleContactSubmit(event)">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+<input type="text" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+<input type="email" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+<textarea class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" rows="4" required></textarea>
+</div>
+<button type="submit" class="w-full px-6 py-3 bg-primary text-white !rounded-button hover:bg-primary/90 transition">Send Message</button>
+</form>
+</div>
+</div>
+<div>
+<div class="bg-white rounded-lg shadow-sm p-8">
+<h3 class="text-xl font-semibold mb-6">Contact Information</h3>
+<div class="space-y-4">
+<div class="flex items-center">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+<i class="ri-phone-line text-primary"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Phone</p>
+<p class="font-medium">+91 6200892887</p>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+<i class="ri-mail-line text-primary"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Email</p>
+<p class="font-medium">rajpratham40@gmail.com</p>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+<i class="ri-map-pin-line text-primary"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Address</p>
+<p class="font-medium">Pan India Services</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-gray-900 text-white py-12">
+<div class="max-w-7xl mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div>
+<h3 class="text-xl font-['Pacifico'] mb-4">SkillConnect</h3>
+<p class="text-gray-400">Connecting Skills Across India</p>
+</div>
+<div>
+<h4 class="font-semibold mb-4">Quick Links</h4>
+<ul class="space-y-2">
+<li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+<li><a href="#services" class="text-gray-400 hover:text-white">Services</a></li>
+<li><a href="#about" class="text-gray-400 hover:text-white">About</a></li>
+<li><a href="#contact" class="text-gray-400 hover:text-white">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-semibold mb-4">Services</h4>
+<ul class="space-y-2">
+<li><a href="#" class="text-gray-400 hover:text-white">Doctors</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Engineers</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Plumbers</a></li>
+<li><a href="#" class="text-gray-400 hover:text-white">Carpenters</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-semibold mb-4">Follow Us</h4>
+<div class="flex space-x-4">
+<a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">
+<i class="ri-facebook-fill"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">
+<i class="ri-twitter-fill"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">
+<i class="ri-instagram-fill"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20">
+<i class="ri-linkedin-fill"></i>
+</a>
+</div>
+</div>
+</div>
+<div class="border-t border-gray-800 mt-12 pt-8 text-center">
+<p class="text-gray-400">&copy; 2025 SkillConnect India. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<div id="loginModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50">
+<div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-semibold">Login</h3>
+<button onclick="closeModal('loginModal')" class="text-gray-400 hover:text-gray-500">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+<input type="email" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+<input type="password" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<button type="submit" class="w-full px-6 py-3 bg-primary text-white !rounded-button hover:bg-primary/90 transition">Login</button>
+</form>
+<p class="text-center mt-4 text-sm text-gray-600">
+Don't have an account?
+<button onclick="switchModal('loginModal', 'registerModal')" class="text-primary hover:text-primary/90">Register</button>
+</p>
+</div>
+</div>
+<div id="registerModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50">
+<div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-semibold">Register</h3>
+<button onclick="closeModal('registerModal')" class="text-gray-400 hover:text-gray-500">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+<input type="text" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+<input type="email" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+<input type="password" class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary" required>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
+<select class="w-full px-4 py-2 rounded border-gray-300 focus:border-primary focus:ring-primary">
+<option value="customer">Customer</option>
+<option value="professional">Professional</option>
+</select>
+</div>
+<button type="submit" class="w-full px-6 py-3 bg-primary text-white !rounded-button hover:bg-primary/90 transition">Register</button>
+</form>
+<p class="text-center mt-4 text-sm text-gray-600">
+Already have an account?
+<button onclick="switchModal('registerModal', 'loginModal')" class="text-primary hover:text-primary/90">Login</button>
+</p>
+</div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+<script>
+const firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_AUTH_DOMAIN",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_STORAGE_BUCKET",
+messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+function openModal(modalId) {
+document.getElementById(modalId).classList.add('active');
+document.body.style.overflow = 'hidden';
+}
+function closeModal(modalId) {
+document.getElementById(modalId).classList.remove('active');
+document.body.style.overflow = 'auto';
+}
+function switchModal(closeModalId, openModalId) {
+closeModal(closeModalId);
+openModal(openModalId);
+}
+function showNotification(message, type = 'success') {
+const notification = document.createElement('div');
+notification.className = `fixed top-4 right-4 px-6 py-3 rounded shadow-lg z-50 ${
+type === 'success' ? 'bg-green-500' : 'bg-red-500'
+} text-white`;
+notification.textContent = message;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 3000);
+}
+async function handleContactSubmit(e) {
+e.preventDefault();
+const form = e.target;
+const name = form.querySelector('input[type="text"]').value;
+const email = form.querySelector('input[type="email"]').value;
+const message = form.querySelector('textarea').value;
+try {
+await db.collection('contacts').add({
+name: name,
+email: email,
+message: message,
+createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+showNotification('Message sent successfully!');
+form.reset();
+} catch (error) {
+showNotification(error.message, 'error');
+}
+}
+// Login form submission
+document.querySelector('#loginModal form').addEventListener('submit', async function(e) {
+e.preventDefault();
+const email = this.querySelector('input[type="email"]').value;
+const password = this.querySelector('input[type="password"]').value;
+if (!email || !password) {
+showNotification('Please fill in all fields', 'error');
+return;
+}
+try {
+const userCredential = await auth.signInWithEmailAndPassword(email, password);
+const user = userCredential.user;
+showNotification('Login successful!');
+closeModal('loginModal');
+this.reset();
+const loginBtn = document.querySelector('button[onclick="openModal(\'loginModal\')"]');
+const registerBtn = document.querySelector('button[onclick="openModal(\'registerModal\')"]');
+loginBtn.textContent = 'My Account';
+loginBtn.onclick = () => showNotification('Account features coming soon!');
+registerBtn.style.display = 'none';
+} catch (error) {
+showNotification(error.message, 'error');
+}
+});
+// Register form submission
+document.querySelector('#registerModal form').addEventListener('submit', async function(e) {
+e.preventDefault();
+const name = this.querySelector('input[type="text"]').value;
+const email = this.querySelector('input[type="email"]').value;
+const password = this.querySelector('input[type="password"]').value;
+const accountType = this.querySelector('select').value;
+if (!name || !email || !password) {
+showNotification('Please fill in all fields', 'error');
+return;
+}
+try {
+const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+const user = userCredential.user;
+// Store additional user data in Firestore
+await db.collection('users').doc(user.uid).set({
+name: name,
+email: email,
+accountType: accountType,
+createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+showNotification('Registration successful! Please login.');
+closeModal('registerModal');
+openModal('loginModal');
+this.reset();
+} catch (error) {
+showNotification(error.message, 'error');
+}
+});
+// Listen for auth state changes
+auth.onAuthStateChanged(user => {
+const loginBtn = document.querySelector('button[onclick="openModal(\'loginModal\')"]');
+const registerBtn = document.querySelector('button[onclick="openModal(\'registerModal\')"]');
+if (user) {
+// User is signed in
+loginBtn.textContent = 'My Account';
+loginBtn.onclick = () => showNotification('Account features coming soon!');
+registerBtn.style.display = 'none';
+} else {
+// User is signed out
+loginBtn.textContent = 'Login';
+loginBtn.onclick = () => openModal('loginModal');
+registerBtn.style.display = 'inline-block';
+}
+});
+</script>
+</body>
+</html>
